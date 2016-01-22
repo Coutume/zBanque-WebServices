@@ -1,0 +1,19 @@
+{
+  "name": "zcraft/Ousse",
+  "description": "Gestionnaire de banque communautaire pour Minecraft",
+  "minimum-stability": "dev",
+  "license": "open source",
+  "authors": [
+    {
+      "name": "moribus",
+      "email": "florian.jean840@gmail.com"
+    }
+  ],
+  "require": {
+    "slim/slim": "3.1.0",
+    "doctrine/orm": "2.5.x-dev"
+  },
+  "autoload": {
+    "psr-0": {"": "Ousse/Entite/"}
+  }
+}

@@ -1,0 +1,51 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: moribus
+ * Date: 22/01/2016
+ * Time: 18:46
+ */
+
+namespace Ousse\WebService;
+
+
+use Psr\Http\Message\ResponseInterface;
+
+class Reponse
+{
+    public static function postSuccess(ResponseInterface $reponse, array $args)
+    {
+        $body = $reponse->getBody();
+
+        $body->write(json_encode($args));
+
+        return $reponse->withStatus(201)->withHeader('Content-type', 'application/json; charset=utf-8');
+    }
+
+    public static function postError(ResponseInterface $reponse, array $args)
+    {
+        $body = $reponse->getBody();
+
+        $body->write(json_encode($args));
+
+        return $reponse->withStatus(500)->withHeader('Content-type', 'application/json; charset=utf-8');
+    }
+
+    public static function getSuccess(ResponseInterface $reponse, array $args)
+    {
+        $body = $reponse->getBody();
+
+        $body->write(json_encode($args));
+
+        return $reponse->withStatus(200)->withHeader('Content-type', 'application/json; charset=utf-8');
+    }
+
+    public static function getError(ResponseInterface $reponse, array $args)
+    {
+        $body = $reponse->getBody();
+
+        $body->write(json_encode($args));
+
+        return $reponse->withStatus(404)->withHeader('Content-type', 'application/json; charset=utf-8');
+    }
+}
