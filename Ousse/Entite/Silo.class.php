@@ -49,7 +49,7 @@ class Silo extends Entite
 
     /**
      * @var Coffre[]
-     * @OneToMany(targetEntity="Coffre",mappedBy="silo")
+     * @OneToMany(targetEntity="Coffre",mappedBy="silo", fetch="EAGER")
      */
     protected $coffres;
 

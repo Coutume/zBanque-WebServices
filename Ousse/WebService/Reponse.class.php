@@ -22,11 +22,14 @@ class Reponse
         return $reponse->withStatus(201)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
 
-    public static function postError(ResponseInterface $reponse, array $args)
+    public static function postError(ResponseInterface $reponse, \Exception $ex)
     {
         $body = $reponse->getBody();
-
-        $body->write(json_encode($args));
+        $erreur = array();
+        $erreur['message'] = "Une erreur est survenue lors de l'ajout. Consultez la variable erreur pour plus d'infos.";
+        $erreur['erreur'] = $ex->getMessage();
+        $erreur['code'] = $ex->getCode();
+        $body->write(json_encode($erreur));
 
         return $reponse->withStatus(500)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
@@ -40,11 +43,14 @@ class Reponse
         return $reponse->withStatus(200)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
 
-    public static function getError(ResponseInterface $reponse, array $args)
+    public static function getError(ResponseInterface $reponse, \Exception $ex)
     {
         $body = $reponse->getBody();
-
-        $body->write(json_encode($args));
+        $erreur = array();
+        $erreur['message'] = "Une erreur est survenue. Consultez la variable erreur pour plus d'infos.";
+        $erreur['erreur'] = $ex->getMessage();
+        $erreur['code'] = $ex->getCode();
+        $body->write(json_encode($erreur));
 
         return $reponse->withStatus(404)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
