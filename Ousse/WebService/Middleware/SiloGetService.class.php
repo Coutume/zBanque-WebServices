@@ -19,28 +19,16 @@ class SiloGetService extends SiloService
                              ResponseInterface      $response, $args)
     {
         $reponse = array();
-        try
+        $silo = $this->getSiloManager()->getSilo($args['id']);
+
+        if($silo !== null)
         {
-            $contenu = $request->getBody()->getContents();
-
-            $silo = $this->getSiloManager()->getSilo($args['id']);
-
-            if($silo !== null)
-            {
-                $reponse['entite'] = json_encode($silo);
-                $reponse['message'] = "Entité récupérée.";
-                $reponse['code'] = 42; // Je sais, c'est pas très pro. :D
-                return Reponse::getSuccess($response, $reponse);
-            }
-
-            $reponse['entite'] = "";
-            $reponse['message'] = "Entité non trouvée";
+            $reponse['entite'] = $silo;
+            $reponse['message'] = "Entité récupérée.";
             $reponse['code'] = 42; // Je sais, c'est pas très pro. :D
             return Reponse::getSuccess($response, $reponse);
         }
-        catch(\Exception $ex)
-        {
-            return Reponse::getError($response, $ex);
-        }
+
+        throw new \Exception("Impossible de trouver le silo n°{$args['id']}");
     }
 }

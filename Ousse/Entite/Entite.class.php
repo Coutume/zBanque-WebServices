@@ -25,6 +25,16 @@ class Entite implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        return get_object_vars($this);
+        $attributs = get_object_vars($this);
+
+        // Suppression des variables Doctrine
+        foreach ($attributs as $nom => $valeur)
+        {
+            if(substr_compare($nom, "__", 0, 2) == 0)
+            {
+                unset($attributs[$nom]);
+            }
+        }
+        return $attributs;
     }
 }

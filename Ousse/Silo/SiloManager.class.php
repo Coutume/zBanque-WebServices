@@ -16,6 +16,7 @@ use stdClass;
 
 /**
  * Gère les silos et leur contenu
+ * TODO scinder la gestion des différents objets en plusieurs classes héritant de la même interface
  * Class SiloManager
  * @package Ousse\Silo
  */
@@ -137,6 +138,14 @@ class SiloManager
         return $coffre;
     }
 
+    public function getCoffres($idSilo)
+    {
+        $coffres = $this->entityManager  ->getRepository("\\Ousse\\Entite\\Coffre")
+            ->findBy(array("silo" => $idSilo));
+
+        return $coffres;
+    }
+
     public function addItemStacks($x, $y, $z, $jsonObject)
     {
         $coffre = $this->getCoffre($x, $y, $z);
@@ -155,6 +164,19 @@ class SiloManager
         }
 
         $this->entityManager->flush();
+    }
+
+    public function getItemStacks($x, $y, $z)
+    {
+        $itemStacks = null;
+        $coffre = $this->getCoffre($x, $y, $z);
+        if($coffre !== null)
+        {
+            $itemStacks = $this->entityManager->getRepository("\\Ousse\\Entite\\ItemStack")
+                ->findBy(array("coffre" => $coffre->getId()));
+        }
+
+        return $itemStacks;
     }
 
     protected function addItemStacksTo(Coffre $coffre, array $jsonObject)

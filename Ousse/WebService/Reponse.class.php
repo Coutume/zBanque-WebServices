@@ -54,4 +54,16 @@ class Reponse
 
         return $reponse->withStatus(404)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
+
+    public static function error(ResponseInterface $reponse, \Exception $ex)
+    {
+        $body = $reponse->getBody();
+        $erreur = array();
+        $erreur['message'] = "Une erreur est survenue. Consultez la variable erreur pour plus d'infos.";
+        $erreur['erreur'] = $ex->getMessage();
+        $erreur['code'] = $ex->getCode();
+        $body->write(json_encode($erreur));
+
+        return $reponse->withStatus(500)->withHeader('Content-type', 'application/json; charset=utf-8');
+    }
 }
