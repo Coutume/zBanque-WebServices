@@ -8,6 +8,8 @@
 
 namespace Ousse\Silo;
 use Doctrine\ORM\EntityManager;
+use Ousse\Entite\Banque;
+use Ousse\Entite\BlocTuile;
 use Ousse\Entite\Coffre;
 use Ousse\Entite\Item;
 use Ousse\Entite\ItemStack;
@@ -29,6 +31,28 @@ class SiloManager
      */
     private $entityManager;
 
+    public function getBanque($nom)
+    {
+        $banque = $this->entityManager->getRepository("\\Ousse\\Entite\\Banque")
+            ->findOneBy(array("nom" => $nom));
+
+        return $banque;
+    }
+
+    protected function getOraddBanque($jsonObject)
+    {
+        $nom = (isset($jsonObject->nom)) ? $jsonObject->nom: null;
+
+        $banque = $this->getBanque($nom);
+        if($banque === null)
+        {
+            $banque = new Banque($jsonObject);
+            $this->entityManager->persist($banque);
+        }
+
+        return $banque;
+    }
+
     public function __construct(EntityManager $manager)
     {
         $this->entityManager = $manager;
@@ -36,21 +60,32 @@ class SiloManager
 
     public function addSilo(StdClass $jsonObject)
     {
-        $silo = new Silo($jsonObject);
-        $this->entityManager->persist($silo);
-
-        if(isset($jsonObject->coffres) && is_array($jsonObject->coffres))
+        if(isset($jsonObject->banque))
         {
-            $this->addCoffresTo($silo, $jsonObject->coffres);
+            $silo = new Silo($jsonObject);
+            $banque = $this->getOraddBanque($jsonObject->banque);
+
+            $silo->setBanque($banque);
+            $this->entityManager->persist($silo);
+
+            if(isset($jsonObject->coffres) && is_array($jsonObject->coffres))
+            {
+                $this->addCoffresTo($silo, $jsonObject->coffres);
+            }
+
+            if(isset($jsonObject->itemPrincipal))
+            {
+                $item = $this->getOraddItem($jsonObject->itemPrincipal);
+                $silo->setItemPrincipal($item);
+            }
+
+            $this->entityManager->flush();
+        }
+        else
+        {
+            throw new \Exception("Impossible de trouver les informations sur la banque dans le silo", -1);
         }
 
-        if(isset($jsonObject->itemPrincipal))
-        {
-            $item = $this->getOraddItem($jsonObject->itemPrincipal);
-            $silo->setItemPrincipal($item);
-        }
-
-        $this->entityManager->flush();
     }
 
     /**

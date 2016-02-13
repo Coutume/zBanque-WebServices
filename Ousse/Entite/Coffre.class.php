@@ -17,7 +17,7 @@ use stdClass;
 /**
  * Class Coffre
  * @package Ousse\Entite
- * @Entity @Table(name="coffres",uniqueConstraints={@UniqueConstraint(name="position_idx", columns={"x", "y","z"})})
+ * @Entity @Table(name="coffres",uniqueConstraints={@UniqueConstraint(name="position_idx", columns={"x","y","z","map"})})
  */
 class Coffre extends Entite
 {
@@ -46,6 +46,12 @@ class Coffre extends Entite
     protected $z;
 
     /**
+     * @var string le nom de la banque
+     * @Column(type="string", length=42, nullable=false)
+     */
+    protected $map;
+
+    /**
      * @var Silo
      * @ManyToOne(targetEntity="Silo", inversedBy="coffres", fetch="EAGER")
      * @JoinColumn(name="silo", referencedColumnName="id", nullable=false)
@@ -65,11 +71,12 @@ class Coffre extends Entite
 
         if($jsonObject != null)
         {
-            if(isset($jsonObject->x) && isset($jsonObject->z) && isset($jsonObject->y))
+            if(isset($jsonObject->x) && isset($jsonObject->z) && isset($jsonObject->y) && isset($jsonObject->map))
             {
                 $this->x = $jsonObject->x;
                 $this->z = $jsonObject->z;
                 $this->y = $jsonObject->y;
+                $this->map = $jsonObject->map;
             }
             else
             {
@@ -132,6 +139,22 @@ class Coffre extends Entite
     public function setZ($z)
     {
         $this->z = $z;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMap()
+    {
+        return $this->map;
+    }
+
+    /**
+     * @param string $map
+     */
+    public function setMap($map)
+    {
+        $this->map = $map;
     }
 
     /**

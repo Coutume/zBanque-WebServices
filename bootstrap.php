@@ -10,6 +10,7 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
 require_once "vendor/autoload.php";
+require_once "autoload.php";
 include 'connexion.inc.php';
 
 // Create a simple "default" Doctrine ORM configuration for Annotations

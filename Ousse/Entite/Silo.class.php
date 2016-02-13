@@ -10,6 +10,7 @@ namespace Ousse\Entite;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use stdClass;
@@ -52,6 +53,13 @@ class Silo extends Entite
      * @OneToMany(targetEntity="Coffre",mappedBy="silo", fetch="EAGER")
      */
     protected $coffres;
+
+    /**
+     * @var Banque le nom de la banque
+     * @ManyToOne(targetEntity="Banque")
+     * @JoinColumn(name="banque", referencedColumnName="nom", nullable=false)
+     */
+    protected $banque;
 
     public function __construct(StdClass $jsonObjet = null)
     {
@@ -143,5 +151,21 @@ class Silo extends Entite
     public function setCoffres($coffres)
     {
         $this->coffres = $coffres;
+    }
+
+    /**
+     * @return Banque
+     */
+    public function getBanque()
+    {
+        return $this->banque;
+    }
+
+    /**
+     * @param Banque $banque
+     */
+    public function setBanque($banque)
+    {
+        $this->banque = $banque;
     }
 }
