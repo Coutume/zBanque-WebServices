@@ -19,7 +19,7 @@ use stdClass;
  * @package Ousse\Entite
  * @Entity
  */
-class Banque
+class Banque extends Entite
 {
     /**
      * @var string nom de la banque

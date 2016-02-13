@@ -6,7 +6,7 @@
  * Time: 11:46
  */
 
-namespace Ousse\Silo;
+namespace Ousse\Manager;
 use Doctrine\ORM\EntityManager;
 use Ousse\Entite\Banque;
 use Ousse\Entite\BlocTuile;

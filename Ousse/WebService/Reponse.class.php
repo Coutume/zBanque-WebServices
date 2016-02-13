@@ -66,4 +66,12 @@ class Reponse
 
         return $reponse->withStatus(500)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
+
+    public static function auth(ResponseInterface $reponse)
+    {
+        $erreur = array();
+        $erreur['message'] = "Vous devez vous connecter pour pouvoir accéder à cette ressource.";
+        $reponse->getBody()->write(json_encode($erreur));
+        return $reponse->withStatus(401)->withHeader('WWW-Authenticate', 'Basic realm="WallyWorld"');
+    }
 }

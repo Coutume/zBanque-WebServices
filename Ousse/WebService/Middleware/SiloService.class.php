@@ -10,7 +10,7 @@ namespace Ousse\WebService\Middleware;
 
 
 use Doctrine\ORM\EntityManager;
-use Ousse\Silo\SiloManager;
+use Ousse\Manager\SiloManager;
 
 class SiloService extends EntiteService
 {

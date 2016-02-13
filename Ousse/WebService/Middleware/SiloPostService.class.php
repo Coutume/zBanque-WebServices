@@ -9,7 +9,7 @@
 namespace Ousse\WebService\Middleware;
 
 
-use Ousse\Silo\SiloManager;
+use Ousse\Manager\SiloManager;
 use Ousse\WebService\Reponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
