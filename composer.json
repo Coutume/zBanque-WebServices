@@ -3,6 +3,7 @@
   "description": "Gestionnaire de banque communautaire pour Minecraft",
   "minimum-stability": "dev",
   "license": "open source",
+  "version": "1.0.0-dev",
   "authors": [
     {
       "name": "moribus",
