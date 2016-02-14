@@ -19,6 +19,8 @@ $app = new Slim\App($container);
 
 $app->add(new \Ousse\WebService\Middleware\AuthService($entityManager));
 
+$app->get('/ping', new \Ousse\WebService\Middleware\PingService());
+
 $app->get('/parametres', new \Ousse\WebService\Middleware\MapParamsService($map));
 
 $app->post('/silos', new \Ousse\WebService\Middleware\SiloPostService($entityManager));
