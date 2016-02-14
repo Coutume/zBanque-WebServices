@@ -25,7 +25,7 @@ class SiloPostService extends SiloService
             $contenu = $request->getBody()->getContents();
 
             $jsonObject = SiloManager::jsonDecode($contenu);
-            $this->getSiloManager()->addSilo($jsonObject);
+            $this->getSiloManager()->addSilos($jsonObject);
 
             $reponse['message'] = "Entité ajoutée.";
             $reponse['code'] = 42; // Je sais, c'est pas très pro. :D

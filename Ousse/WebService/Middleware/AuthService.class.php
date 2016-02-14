@@ -20,7 +20,7 @@ class AuthService extends EntiteService
                              ResponseInterface $response, $args)
     {
         // Contrôle de connexion pour toute requête POST
-        if($request->getMethod() == "POST")
+        if($request->getMethod() == "GET")
         {
             $auth = new WebAuth($this->getManager());
 

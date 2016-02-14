@@ -19,6 +19,8 @@ class BlocTuile
 
     protected $z;
 
+    protected $banque;
+
     protected $bloc;
 
     protected $type_id;

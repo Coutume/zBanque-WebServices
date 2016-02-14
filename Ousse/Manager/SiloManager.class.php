@@ -31,6 +31,16 @@ class SiloManager
      */
     private $entityManager;
 
+    public function __construct(EntityManager $manager)
+    {
+        $this->entityManager = $manager;
+    }
+
+    /**
+     * Renvoie les infos sur la banque nommée $nom
+     * @param $nom string le nom de la banque
+     * @return null|Banque
+     */
     public function getBanque($nom)
     {
         $banque = $this->entityManager->getRepository("\\Ousse\\Entite\\Banque")
@@ -39,6 +49,12 @@ class SiloManager
         return $banque;
     }
 
+    /**
+     * Ajoute une nouvelle banque, ou renvoie la banque
+     * ayant le nom défini dans l'objet JSON si existante
+     * @param $jsonObject
+     * @return null|Banque
+     */
     protected function getOraddBanque($jsonObject)
     {
         $nom = (isset($jsonObject->nom)) ? $jsonObject->nom: null;
@@ -53,12 +69,38 @@ class SiloManager
         return $banque;
     }
 
-    public function __construct(EntityManager $manager)
+
+
+    /**
+     * Ajoute le ou les silos définis dans l'objet json
+     * @param stdClass $jsonObject
+     */
+    public function addSilos($jsonObject)
     {
-        $this->entityManager = $manager;
+        if(!is_array($jsonObject))
+        {
+            $this->addSilo($jsonObject);
+        }
+        else
+        {
+            foreach($jsonObject as $json)
+            {
+                $this->addSilo($json);
+            }
+        }
+
+        $this->entityManager->flush();
     }
 
-    public function addSilo(StdClass $jsonObject)
+    /**
+     * Ajoute le silo défini dans l'objet JSON
+     * ATTENTION : cette méthode ne fait pas de flush(),
+     * veillez donc à l'exécuter afin que Doctrine sauvegarde l'entité
+     * en base
+     * @param stdClass $jsonObject
+     * @throws \Exception
+     */
+    protected function addSilo(StdClass $jsonObject)
     {
         if(isset($jsonObject->banque))
         {
@@ -78,8 +120,6 @@ class SiloManager
                 $item = $this->getOraddItem($jsonObject->itemPrincipal);
                 $silo->setItemPrincipal($item);
             }
-
-            $this->entityManager->flush();
         }
         else
         {
@@ -89,6 +129,7 @@ class SiloManager
     }
 
     /**
+     * Récupère un silo selon son id
      * @param $id
      * @return null|Silo
      */
@@ -101,7 +142,8 @@ class SiloManager
     }
 
     /**
-     * @param int $idSilo
+     * Ajoute le ou les coffres définis dans l'objet JSON
+     * @param int $idSilo l'id du silo dans lequel ajouter les coffres
      * @param stdClass $jsonObject
      */
     public function addCoffres($idSilo, $jsonObject)
@@ -124,6 +166,12 @@ class SiloManager
         $this->entityManager->flush();
     }
 
+    /**
+     * Ajoute les coffres contenus dans l'objet JSON dans le silo $silo
+     * @param Silo $silo le silo dans lequel ajouter les coffres
+     * @param array $jsonObject une liste des objets à ajouter
+     * @throws \Exception Si un des éléments de la liste n'est pas un objet valide
+     */
     protected function addCoffresTo(Silo $silo, array $jsonObject)
     {
         foreach($jsonObject as $jsonCoffre)
@@ -139,6 +187,13 @@ class SiloManager
         }
     }
 
+    /**
+     * Ajoute un coffre dans le silo $silo
+     * @see addCoffresTo
+     * @param Silo $silo
+     * @param stdClass $jsonObject
+     * @throws \Exception
+     */
     protected function addCoffreTo(Silo $silo, StdClass $jsonObject)
     {
         $coffre = $this->getCoffre($jsonObject->x, $jsonObject->y, $jsonObject->z);
@@ -158,6 +213,7 @@ class SiloManager
     }
 
     /**
+     * Récupère un coffre se trouvant aux coordonnées passées en paramètre
      * @param $x
      * @param $y
      * @param $z
@@ -301,9 +357,10 @@ class SiloManager
     }
 
     /**
-     * @param $idItem
-     * @param $data
-     * @return null|Item
+     * Récupère un item
+     * @param $idItem int l'identifiant numéraire Minecraft de l'item
+     * @param $data int l'attribut donnée Minecraft de l'item
+     * @return null|Item l'entité si l'item existe, null sinon
      */
     public function getItem($idItem, $data)
     {
@@ -314,8 +371,12 @@ class SiloManager
         return $item;
     }
 
-
-
+    /**
+     * Parse la chaine de caractère JSON passée en paramètre
+     * @param $jsonString string la chaine de caractère JSON à parser
+     * @return mixed objet JSON deserializé
+     * @throws \Exception Si une erreur survient lors de la deserialization
+     */
     public static function jsonDecode($jsonString)
     {
         $retour = json_decode("{}");
