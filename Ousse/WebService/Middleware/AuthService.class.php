@@ -53,5 +53,5 @@ class AuthService extends EntiteService
         }
 
         return $response;
-        }
+    }
 }
