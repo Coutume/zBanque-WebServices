@@ -32,7 +32,7 @@ class Map
         $dbname = '';
 
         // Paramètres de connexion
-        include_once __DIR__."/../../connexion.inc.php";
+        include __DIR__."/../../connexion.inc.php";
         $this->connexion = new \PDO("mysql:host=$host;dbname=$dbname", $user, $pwd);
 
         $this->params = new MapParams();

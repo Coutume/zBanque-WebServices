@@ -1,5 +1,9 @@
-
 # Created by https://www.gitignore.io/api/webstorm,phpstorm,composer
+
+### Custom ###
+
+connexion.priv.inc.php
+
 
 ### WebStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
