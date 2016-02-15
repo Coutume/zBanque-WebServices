@@ -20,6 +20,7 @@ $app = new Slim\App($container);
 $app->add(new \Ousse\WebService\Middleware\AuthService($entityManager));
 
 $app->get('/ping', new \Ousse\WebService\Middleware\PingService());
+$app->post('/check_auth', new Ousse\WebService\Middleware\AuthCheckService());
 
 $app->get('/parametres', new \Ousse\WebService\Middleware\MapParamsService($map));
 
