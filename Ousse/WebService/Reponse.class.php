@@ -31,7 +31,7 @@ class Reponse
         $erreur['code'] = $ex->getCode();
         $body->write(json_encode($erreur));
 
-        return $reponse->withStatus(500)->withHeader('Content-type', 'application/json; charset=utf-8');
+        return $reponse->withStatus(400)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
 
     public static function getSuccess(ResponseInterface $reponse, array $args)

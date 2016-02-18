@@ -98,7 +98,7 @@ class Banque extends Entite
             }
             else
             {
-                throw new \Exception("La propriété idItem nécessaire à l'entité Banque est introuvable dans l'objet Json.");
+                throw new \Exception("La propriété nom nécessaire à l'entité Banque est introuvable dans l'objet Json.");
             }
         }
     }

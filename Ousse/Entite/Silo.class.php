@@ -69,14 +69,21 @@ class Silo extends Entite
 
         if($jsonObjet != null)
         {
-            if(isset($jsonObjet->x) && isset($jsonObjet->z))
+            if(isset($jsonObjet->x))
             {
-                $this->x = $jsonObjet->x;
-                $this->z = $jsonObjet->z;
+                if(isset($jsonObjet->z))
+                {
+                    $this->x = $jsonObjet->x;
+                    $this->z = $jsonObjet->z;
+                }
+                else
+                {
+                    throw new \Exception("La propriété z nécessaire à l'entité Silo est introuvable dans l'objet Json.");
+                }
             }
             else
             {
-                throw new \Exception("Les propriétés nécessaires à l'entité Silo sont introuvables dans l'objet Json.");
+                throw new \Exception("La propriété x nécessaire à l'entité Silo est introuvable dans l'objet Json.");
             }
         }
     }
