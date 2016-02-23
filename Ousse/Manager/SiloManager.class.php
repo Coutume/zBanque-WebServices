@@ -64,6 +64,7 @@ class SiloManager
         {
             $banque = new Banque($jsonObject);
             $this->entityManager->persist($banque);
+            $this->entityManager->flush($banque);
         }
 
         return $banque;
@@ -202,9 +203,15 @@ class SiloManager
         {
             $coffre = new Coffre($jsonObject);
             $this->entityManager->persist($coffre);
+            $coffre->setSilo($silo);
+            $this->entityManager->flush($coffre);
+        }
+        else
+        {
+            $coffre->setSilo($silo);
         }
 
-        $coffre->setSilo($silo);
+
 
         if(isset($jsonObject->itemStacks) && is_array($jsonObject->itemStacks))
         {
@@ -351,7 +358,9 @@ class SiloManager
         {
             $item = new Item($jsonObject);
             $this->entityManager->persist($item);
+            $this->entityManager->flush($item);
         }
+
 
         return $item;
     }
