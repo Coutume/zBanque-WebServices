@@ -32,3 +32,4 @@ $app->get('/silos/{id}/coffres', new \Ousse\WebService\Middleware\CoffresGetAllS
 $app->get('/coffres/{x}/{y}/{z}/stacks', new \Ousse\WebService\Middleware\ItemStackGetAllService($entityManager));
 
 $app->run();
+

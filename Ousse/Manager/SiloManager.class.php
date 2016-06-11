@@ -64,6 +64,7 @@ class SiloManager
         {
             $banque = new Banque($jsonObject);
             $this->entityManager->persist($banque);
+            $this->entityManager->flush();
         }
 
         return $banque;
@@ -351,6 +352,7 @@ class SiloManager
         {
             $item = new Item($jsonObject);
             $this->entityManager->persist($item);
+            $this->entityManager->flush($item);
         }
 
         return $item;

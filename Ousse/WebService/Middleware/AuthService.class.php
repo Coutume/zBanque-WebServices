@@ -20,7 +20,7 @@ class AuthService extends EntiteService
                              ResponseInterface $response, $args)
     {
         // Contrôle de connexion pour toute requête POST
-        if($request->getMethod() == "GET")
+        if($request->getMethod() == "POST")
         {
             $auth = new WebAuth($this->getManager());
 
@@ -36,18 +36,18 @@ class AuthService extends EntiteService
                 {
                     $response = $args($request, $response);
                 }
-    else
-        {
-            throw new \Exception("L'utilisateur ou le mot de passe renseigné ne correspondent pas.");
-        }
-    }
-    else
-        {
-            $response = Reponse::auth($response);
-        }
+                else
+                {
+                    throw new \Exception("L'utilisateur ou le mot de passe renseigné ne correspondent pas.");
+                }
+            }
+            else
+            {
+                $response = Reponse::auth($response);
+            }
 
-    }
-    else
+        }
+        else
         {
             $response = $args($request, $response);
         }
