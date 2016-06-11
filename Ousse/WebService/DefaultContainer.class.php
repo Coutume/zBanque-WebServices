@@ -9,7 +9,7 @@
 namespace Ousse\WebService;
 
 use Slim\Container;
-
+// TODO Repenser la gestion des erreurs
 class DefaultContainer extends Container
 {
     public function __construct()
@@ -18,7 +18,19 @@ class DefaultContainer extends Container
         $this['errorHandler'] = function ($container) {
             return function ($request, $response, $exception) use ($container)
             {
-                return Reponse::error($response, $exception);
+                switch($request->getMethod())
+                {
+                    case "POST":
+                        return Reponse::postError($response, $exception);
+                        break;
+                    case "GET":
+                        return Reponse::getError($response, $exception);
+                        break;
+                    default:
+                        return Reponse::error($response, $exception);
+                        break;
+                }
+
             };
         };
     }

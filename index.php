@@ -19,6 +19,9 @@ $app = new Slim\App($container);
 
 $app->add(new \Ousse\WebService\Middleware\AuthService($entityManager));
 
+$app->get('/ping', new \Ousse\WebService\Middleware\PingService());
+$app->post('/check_auth', new Ousse\WebService\Middleware\AuthCheckService());
+
 $app->get('/parametres', new \Ousse\WebService\Middleware\MapParamsService($map));
 
 $app->post('/silos', new \Ousse\WebService\Middleware\SiloPostService($entityManager));
@@ -32,4 +35,3 @@ $app->get('/silos/{id}/coffres', new \Ousse\WebService\Middleware\CoffresGetAllS
 $app->get('/coffres/{x}/{y}/{z}/stacks', new \Ousse\WebService\Middleware\ItemStackGetAllService($entityManager));
 
 $app->run();
-

@@ -29,6 +29,7 @@ class AuthService extends EntiteService
             {
                 $user = (isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER']: "");
                 $mdp = (isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_PW']: "");
+
                 $utilisateur = $auth->login($user, $mdp);
 
                 // Utilisateur identifié et autorisé à exécuter des requêtes POST
@@ -38,20 +39,19 @@ class AuthService extends EntiteService
                 }
                 else
                 {
-                    throw new \Exception("L'utilisateur ou le mot de passe renseigné ne correspondent pas.");
+                    $response = Reponse::auth($response, "Le nom d'utilisateur ou le mot de passe renseigné ne correspondent pas.");
                 }
             }
             else
             {
                 $response = Reponse::auth($response);
             }
-
         }
         else
         {
             $response = $args($request, $response);
         }
 
-    return $response;
+        return $response;
     }
 }

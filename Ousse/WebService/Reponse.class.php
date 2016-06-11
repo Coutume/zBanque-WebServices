@@ -31,7 +31,7 @@ class Reponse
         $erreur['code'] = $ex->getCode();
         $body->write(json_encode($erreur));
 
-        return $reponse->withStatus(500)->withHeader('Content-type', 'application/json; charset=utf-8');
+        return $reponse->withStatus(400)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
 
     public static function getSuccess(ResponseInterface $reponse, array $args)
@@ -67,10 +67,10 @@ class Reponse
         return $reponse->withStatus(500)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
 
-    public static function auth(ResponseInterface $reponse)
+    public static function auth(ResponseInterface $reponse, $message = null)
     {
         $erreur = array();
-        $erreur['message'] = "Vous devez vous connecter pour pouvoir accéder à cette ressource.";
+        $erreur['message'] = $message == null ? "Vous devez vous connecter pour pouvoir accéder à cette ressource." : $message;
         $reponse->getBody()->write(json_encode($erreur));
         return $reponse->withStatus(401)->withHeader('WWW-Authenticate', 'Basic realm="WallyWorld"');
     }
