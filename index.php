@@ -16,6 +16,9 @@ $app = new Slim\App($container);
 
 $app->add(new \Ousse\WebService\Middleware\AuthService($entityManager));
 
+$app->get("/{entite}/where/{whereParams:.*}/equals/{equalsParams:.*}",
+    new \Ousse\WebService\Middleware\EntitesGetService($entityManager));
+
 $app->get('/ping', new \Ousse\WebService\Middleware\PingService());
 $app->post('/check_auth', new Ousse\WebService\Middleware\AuthCheckService());
 

@@ -7,6 +7,7 @@
  */
 
 namespace Ousse\Entite;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -55,11 +56,17 @@ class Silo extends Entite
     protected $coffres;
 
     /**
-     * @var Banque le nom de la banque
+     * @var Banque l'objet Banque
      * @ManyToOne(targetEntity="Banque")
      * @JoinColumn(name="banque", referencedColumnName="nom", nullable=false,onDelete="CASCADE")
      */
     protected $banque;
+
+    /**
+     * @var string Le nom de la banque
+     * @Column(name="banque", type="string")
+     */
+    protected $nomBanque;
 
     public function __construct(StdClass $jsonObjet = null)
     {

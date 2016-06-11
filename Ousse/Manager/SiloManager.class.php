@@ -37,6 +37,13 @@ class SiloManager
         $this->entityManager = $manager;
     }
 
+    public function get($entite, array $conditions)
+    {
+        $entites = $this->entityManager->getRepository("\\Ousse\\Entite\\$entite")->findBy($conditions);
+
+        return $entites;
+    }
+
     /**
      * Renvoie les infos sur la banque nommée $nom
      * @param $nom string le nom de la banque
