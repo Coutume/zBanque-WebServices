@@ -19,8 +19,10 @@ class AuthService extends EntiteService
     public function __invoke(ServerRequestInterface $request,
                              ResponseInterface $response, $args)
     {
-        // Contrôle de connexion pour toute requête POST
-        if($request->getMethod() == "POST")
+        // Contrôle de connexion pour toute requête modifiant les données
+        if( $request->getMethod() == "POST" ||
+            $request->getMethod() == "PUT" ||
+            $request->getMethod() == "DELETE")
         {
             $auth = new WebAuth($this->getManager());
 

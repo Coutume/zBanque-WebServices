@@ -8,6 +8,7 @@
 
 namespace Ousse\Manager;
 use Doctrine\ORM\EntityManager;
+use Exception;
 use Ousse\Entite\Banque;
 use Ousse\Entite\BlocTuile;
 use Ousse\Entite\Coffre;
@@ -47,6 +48,15 @@ class SiloManager
             ->findOneBy(array("nom" => $nom));
 
         return $banque;
+    }
+
+    public function resetBanque($nom)
+    {
+        $reqResetBanque = $this->entityManager->createQuery("Delete \\Ousse\\Entite\\Silo silo Where silo.banque IN".
+            " (Select banque From \\Ousse\\Entite\\Banque banque Where banque.nom = '$nom')");
+        $reqResetBanque->execute();
+
+        // Pas de retour. En cas de problème, une exception est levée par execute()
     }
 
     /**

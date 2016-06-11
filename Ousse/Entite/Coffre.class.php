@@ -54,7 +54,7 @@ class Coffre extends Entite
     /**
      * @var Silo
      * @ManyToOne(targetEntity="Silo", inversedBy="coffres", fetch="EAGER")
-     * @JoinColumn(name="silo", referencedColumnName="id", nullable=false)
+     * @JoinColumn(name="silo", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     protected $silo;
 

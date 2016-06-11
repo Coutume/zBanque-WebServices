@@ -42,7 +42,7 @@ class ItemStack extends Entite
     /**
      * @var Coffre
      * @ManyToOne(targetEntity="Coffre", inversedBy="itemStacks")
-     * @JoinColumn(name="coffre", referencedColumnName="id", nullable=false)
+     * @JoinColumn(name="coffre", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     protected $coffre;
 

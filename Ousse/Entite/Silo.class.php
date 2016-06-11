@@ -57,7 +57,7 @@ class Silo extends Entite
     /**
      * @var Banque le nom de la banque
      * @ManyToOne(targetEntity="Banque")
-     * @JoinColumn(name="banque", referencedColumnName="nom", nullable=false)
+     * @JoinColumn(name="banque", referencedColumnName="nom", nullable=false,onDelete="CASCADE")
      */
     protected $banque;
 

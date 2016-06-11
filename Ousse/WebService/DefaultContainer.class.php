@@ -8,6 +8,7 @@
 
 namespace Ousse\WebService;
 
+use Psr\Http\Message\RequestInterface;
 use Slim\Container;
 // TODO Repenser la gestion des erreurs
 class DefaultContainer extends Container
@@ -16,7 +17,7 @@ class DefaultContainer extends Container
     {
         parent::__construct();
         $this['errorHandler'] = function ($container) {
-            return function ($request, $response, $exception) use ($container)
+            return function (RequestInterface $request, $response, $exception) use ($container)
             {
                 switch($request->getMethod())
                 {
