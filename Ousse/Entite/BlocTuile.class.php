@@ -7,23 +7,61 @@
  */
 
 namespace Ousse\Entite;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
-
-class BlocTuile
+/**
+ * Représente une tuile correspondant à un bloc sur une carte
+ * @Entity @Table(name="cases")
+ * @package Ousse\Entite
+ */
+class BlocTuile extends Entite
 {
+    /**
+     * @var integer
+     * @Id @Column(type="integer") @GeneratedValue
+     */
     protected $id;
 
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     protected $x;
 
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     protected $y;
 
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     protected $z;
 
-    protected $banque;
-
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     protected $bloc;
 
-    protected $type_id;
+    /**
+     * @var Banque l'objet Banque
+     * @ManyToOne(targetEntity="Banque")
+     * @JoinColumn(name="banque", referencedColumnName="nom", nullable=false,onDelete="CASCADE")
+     */
+    protected $banque;
+
+    /**
+     * @var string Le nom de la banque
+     * @Column(name="banque", type="string", length=255)
+     */
+    protected $nomBanque;
 
     public function __construct()
     {
@@ -85,22 +123,6 @@ class BlocTuile
     public function setBloc($bloc)
     {
         $this->bloc = $bloc;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTypeId()
-    {
-        return $this->type_id;
-    }
-
-    /**
-     * @param mixed $type_id
-     */
-    public function setTypeId($type_id)
-    {
-        $this->type_id = $type_id;
     }
 
     /**

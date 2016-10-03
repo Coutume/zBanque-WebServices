@@ -51,7 +51,7 @@ class Silo extends Entite
 
     /**
      * @var Coffre[]
-     * @OneToMany(targetEntity="Coffre",mappedBy="silo", fetch="EAGER")
+     * @OneToMany(targetEntity="Coffre",mappedBy="silo", fetch="LAZY")
      */
     protected $coffres;
 
@@ -182,4 +182,17 @@ class Silo extends Entite
     {
         $this->banque = $banque;
     }
+
+    /***
+     * @return mixed Les attributs du Silo à "serializer"
+     */
+    function jsonSerialize()
+    {
+        $attributs = parent::jsonSerialize();
+        $attributs['coffres'] = $attributs['coffres']->toArray(); // Renvoi de la liste des coffres au lieu d'un object PersistentCollection
+
+        return $attributs;
+    }
+
+
 }

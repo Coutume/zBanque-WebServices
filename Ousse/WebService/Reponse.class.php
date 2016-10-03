@@ -39,7 +39,7 @@ class Reponse
         $body = $reponse->getBody();
 
         $body->write(json_encode($args));
-
+        //$body->write(json_last_error_msg());
         return $reponse->withStatus(200)->withHeader('Content-type', 'application/json; charset=utf-8');
     }
 

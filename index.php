@@ -9,8 +9,12 @@
 require_once __DIR__.'/autoload.php'; // Chargement automatique des classes Ousse
 require_once 'vendor/autoload.php'; // Chargement automatique des classes provenant des dépendances (Slim, Doctrine, ..)
 require_once __DIR__.'/bootstrap.php'; // Inclusion de $entityManager pour manipuler les entités
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-$map = new \Ousse\Map\Map();
+$map = new \Ousse\Map\Map($entityManager);
+
 $container = new \Ousse\WebService\DefaultContainer();
 $app = new Slim\App($container);
 

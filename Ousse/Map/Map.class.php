@@ -9,23 +9,41 @@
 namespace Ousse\Map;
 
 
+use Doctrine\ORM\EntityManager;
+use Ousse\Entite\Banque;
 use Ousse\Entite\BlocTuile;
+use Ousse\Manager\BlocTuileManager;
 
 class Map
 {
     /**
      * @var \PDO Connexion à la base contenant la map
      */
-    private $connexion;
+    //private $connexion;
+
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
+     * @var BlocTuileManager
+     */
+    private $blocTuileManager;
 
     /**
      * @var MapParams paramètres relatifs à cette carte
      */
     private $params;
 
-    public function __construct()
+    /**
+     * @var Banque
+     */
+    private $_currentBanque;
+
+    public function __construct(EntityManager $entityManager)
     {
-        // Ces variables évitent juste les alertes de variables non initialisées
+        /* Ces variables évitent juste les alertes de variables non initialisées
         $host = '';
         $user = '';
         $pwd = '';
@@ -33,17 +51,13 @@ class Map
 
         // Paramètres de connexion
         include __DIR__."/../../connexion.inc.php";
-        $this->connexion = new \PDO("mysql:host=$host;dbname=$dbname", $user, $pwd);
+        $this->connexion = new \PDO("mysql:host=$host;dbname=$dbname", $user, $pwd);*/
+
+        $this->entityManager = $entityManager;
+
+        $this->blocTuileManager = new BlocTuileManager($this->entityManager);
 
         $this->params = new MapParams();
-    }
-
-    /**
-     * @return BlocTuile[]
-     */
-    public function getAllBlocTuiles()
-    {
-        return $this->connexion->query("SELECT * FROM cases")->fetchAll(\PDO::FETCH_CLASS, '\Ousse\Map\BlocTuile');
     }
 
     /**
@@ -53,11 +67,12 @@ class Map
      */
     public function getBlocTuileAt($x, $y)
     {
-        $reqBloc =$this->connexion->query("SELECT * FROM cases WHERE x = $x AND z = $y");
+        //$reqBloc =$this->connexion->query("SELECT * FROM cases WHERE x = $x AND z = $y");
 
-        if($reqBloc !== null && $reqBloc !== false)
-        {
-            $bloc = $reqBloc->fetchAll(\PDO::FETCH_CLASS, '\Ousse\Map\BlocTuile');
+        /*if($reqBloc !== null && $reqBloc !== false)
+        {*/
+            //$bloc = $reqBloc->fetchAll(\PDO::FETCH_CLASS, '\Ousse\Entite\BlocTuile');
+            $bloc = $this->blocTuileManager->getByPos($x, $y);
 
             if($bloc !== null && count($bloc) > 0)
             {
@@ -67,9 +82,9 @@ class Map
             {
                 return false;
             }
-        }
+        //}
 
-        return false;
+        //return false;
     }
 
     public function genererTuiles($taille, $nbBlocsDepart, $zoomMax = 5)
@@ -196,7 +211,7 @@ class Map
      */
     public function getMinPos()
     {
-        $pos = $this->connexion->query("SELECT MIN(x) as x, MIN(z) as y FROM cases");
+        $pos = $this->entityManager->getConnection()->query("SELECT MIN(x) as x, MIN(z) as y FROM cases");
 
         if($pos !== null && $pos !== false && $pos->rowCount() > 0)
         {
@@ -212,7 +227,7 @@ class Map
      */
     public function getMaxPos()
     {
-        $pos = $this->connexion->query("SELECT MAX(x) as x, MAX(z) as y FROM cases");
+        $pos = $this->entityManager->getConnection()->query("SELECT MAX(x) as x, MAX(z) as y FROM cases");
 
         if($pos !== null && $pos !== false && $pos->rowCount() > 0)
         {

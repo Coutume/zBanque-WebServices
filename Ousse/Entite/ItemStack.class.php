@@ -106,4 +106,14 @@ class ItemStack extends Entite
     {
         $this->coffre = $coffre;
     }
+
+    function jsonSerialize()
+    {
+        $attributs = parent::jsonSerialize();
+        unset($attributs['coffre']); // Suppression de l'attribut afin d'éviter les références circulaires
+
+        return $attributs;
+    }
+
+
 }

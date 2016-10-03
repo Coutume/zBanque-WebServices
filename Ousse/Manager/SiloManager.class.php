@@ -32,9 +32,12 @@ class SiloManager
      */
     private $entityManager;
 
+    private $_banqueManager;
+
     public function __construct(EntityManager $manager)
     {
         $this->entityManager = $manager;
+        $this->_banqueManager = new BanqueManager($this->entityManager);
     }
 
     public function get($entite, array $conditions)
@@ -51,19 +54,12 @@ class SiloManager
      */
     public function getBanque($nom)
     {
-        $banque = $this->entityManager->getRepository("\\Ousse\\Entite\\Banque")
-            ->findOneBy(array("nom" => $nom));
-
-        return $banque;
+        return $this->_banqueManager->getByName($nom);
     }
 
     public function resetBanque($nom)
     {
-        $reqResetBanque = $this->entityManager->createQuery("Delete \\Ousse\\Entite\\Silo silo Where silo.banque IN".
-            " (Select banque From \\Ousse\\Entite\\Banque banque Where banque.nom = '$nom')");
-        $reqResetBanque->execute();
-
-        // Pas de retour. En cas de problème, une exception est levée par execute()
+        $this->_banqueManager->resetByName($nom);
     }
 
     /**
@@ -74,17 +70,7 @@ class SiloManager
      */
     protected function getOraddBanque($jsonObject)
     {
-        $nom = (isset($jsonObject->nom)) ? $jsonObject->nom: null;
-
-        $banque = $this->getBanque($nom);
-        if($banque === null)
-        {
-            $banque = new Banque($jsonObject);
-            $this->entityManager->persist($banque);
-            $this->entityManager->flush();
-        }
-
-        return $banque;
+        return $this->_banqueManager->getOradd($jsonObject);
     }
 
 

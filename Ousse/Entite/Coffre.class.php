@@ -53,7 +53,7 @@ class Coffre extends Entite
 
     /**
      * @var Silo
-     * @ManyToOne(targetEntity="Silo", inversedBy="coffres", fetch="EAGER")
+     * @ManyToOne(targetEntity="Silo", inversedBy="coffres", fetch="LAZY")
      * @JoinColumn(name="silo", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     protected $silo;
@@ -188,4 +188,15 @@ class Coffre extends Entite
     {
         $this->itemStacks = $itemStacks;
     }
+
+    function jsonSerialize()
+    {
+        $attributs = parent::jsonSerialize();
+        unset($attributs['silo']); // Suppression de la référence à l'objet Silo afin d'éviter les références circulaires
+        $attributs['itemStacks'] = $attributs['itemStacks']->toArray();
+
+        return $attributs;
+    }
+
+
 }
