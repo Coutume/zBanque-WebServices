@@ -8,9 +8,7 @@
 
 namespace Ousse\Manager;
 use Doctrine\ORM\EntityManager;
-use Exception;
 use Ousse\Entite\Banque;
-use Ousse\Entite\BlocTuile;
 use Ousse\Entite\Coffre;
 use Ousse\Entite\Item;
 use Ousse\Entite\ItemStack;
@@ -32,6 +30,9 @@ class SiloManager
      */
     private $entityManager;
 
+    /**
+     * @var BanqueManager
+     */
     private $_banqueManager;
 
     public function __construct(EntityManager $manager)
@@ -104,7 +105,7 @@ class SiloManager
      * @param stdClass $jsonObject
      * @throws \Exception
      */
-    protected function addSilo(StdClass $jsonObject)
+    protected function addSilo(stdClass $jsonObject)
     {
         if(isset($jsonObject->banque))
         {
@@ -180,7 +181,7 @@ class SiloManager
     {
         foreach($jsonObject as $jsonCoffre)
         {
-            if($jsonCoffre instanceof StdClass)
+            if($jsonCoffre instanceof stdClass)
             {
                 $this->addCoffreTo($silo, $jsonCoffre);
             }
@@ -198,7 +199,7 @@ class SiloManager
      * @param stdClass $jsonObject
      * @throws \Exception
      */
-    protected function addCoffreTo(Silo $silo, StdClass $jsonObject)
+    protected function addCoffreTo(Silo $silo, stdClass $jsonObject)
     {
         $coffre = $this->getCoffre($jsonObject->x, $jsonObject->y, $jsonObject->z);
 
@@ -278,7 +279,7 @@ class SiloManager
     {
         foreach($jsonObject as $jsonItemStack)
         {
-            if($jsonItemStack instanceof StdClass)
+            if($jsonItemStack instanceof stdClass)
             {
                 $this->addItemStackTo($coffre, $jsonItemStack);
             }
@@ -289,7 +290,7 @@ class SiloManager
         }
     }
 
-    protected function addItemStackTo(Coffre $coffre, StdClass $jsonObject)
+    protected function addItemStackTo(Coffre $coffre, stdClass $jsonObject)
     {
         $item = null;
         if(isset($jsonObject->item))
@@ -330,7 +331,7 @@ class SiloManager
     {
         foreach($jsonObject as $jsonItem)
         {
-            if($jsonItem instanceof StdClass)
+            if($jsonItem instanceof stdClass)
             {
                 $this->getOraddItem($jsonItem);
             }

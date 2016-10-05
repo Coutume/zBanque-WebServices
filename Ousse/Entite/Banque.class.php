@@ -8,10 +8,11 @@
 
 namespace Ousse\Entite;
 
-
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use stdClass;
 
 /**
@@ -52,7 +53,15 @@ class Banque extends Entite
      */
     protected $map;
 
-    public function __construct(StdClass $jsonObject)
+    /**
+     * Configuration de la génération et du rendu de la carte de la banque
+     * @var MapBanqueConfig
+     * @ManyToOne(targetEntity="MapBanqueConfig")
+     * @JoinColumn(name="config", referencedColumnName="id", nullable=true)
+     */
+    protected $config;
+
+    public function __construct(stdClass $jsonObject)
     {
         if($jsonObject != null)
         {
@@ -103,4 +112,91 @@ class Banque extends Entite
         }
     }
 
+    /**
+     * @return string
+     */
+    public function getNom()
+    {
+        return $this->nom;
+    }
+
+    /**
+     * @return int
+     */
+    public function getX()
+    {
+        return $this->x;
+    }
+
+    /**
+     * @param int $x
+     */
+    public function setX($x)
+    {
+        $this->x = $x;
+    }
+
+    /**
+     * @return int
+     */
+    public function getY()
+    {
+        return $this->y;
+    }
+
+    /**
+     * @param int $y
+     */
+    public function setY($y)
+    {
+        $this->y = $y;
+    }
+
+    /**
+     * @return int
+     */
+    public function getZ()
+    {
+        return $this->z;
+    }
+
+    /**
+     * @param int $z
+     */
+    public function setZ($z)
+    {
+        $this->z = $z;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMap()
+    {
+        return $this->map;
+    }
+
+    /**
+     * @param string $map
+     */
+    public function setMap($map)
+    {
+        $this->map = $map;
+    }
+
+    /**
+     * @return MapBanqueConfig
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param MapBanqueConfig $config
+     */
+    public function setConfig($config)
+    {
+        $this->config = $config;
+    }
 }

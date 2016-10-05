@@ -13,8 +13,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$map = new \Ousse\Map\Map($entityManager);
-
 $container = new \Ousse\WebService\DefaultContainer();
 $app = new Slim\App($container);
 
@@ -26,7 +24,7 @@ $app->get("/{entite}/where/{whereParams:.*}/equals/{equalsParams:.*}",
 $app->get('/ping', new \Ousse\WebService\Middleware\PingService());
 $app->post('/check_auth', new Ousse\WebService\Middleware\AuthCheckService());
 
-$app->get('/parametres', new \Ousse\WebService\Middleware\MapParamsService($map));
+$app->get('/parametres/{banque}', new \Ousse\WebService\Middleware\ParamsService($entityManager));
 
 $app->post('/silos', new \Ousse\WebService\Middleware\SiloPostService($entityManager));
 $app->get('/silos/{id}', new \Ousse\WebService\Middleware\SiloGetService($entityManager));

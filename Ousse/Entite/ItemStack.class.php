@@ -46,7 +46,7 @@ class ItemStack extends Entite
      */
     protected $coffre;
 
-    public function __construct(StdClass $jsonObject)
+    public function __construct(stdClass $jsonObject)
     {
         $this->montant = (isset($jsonObject->montant)) ? $jsonObject->montant : 0;
     }

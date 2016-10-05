@@ -86,7 +86,7 @@ class MapParams implements \JsonSerializable
     }
 
     /**
-     * @param integer $resolutions
+     * @param integer $resolution
      */
     public function addResolutions($resolution)
     {

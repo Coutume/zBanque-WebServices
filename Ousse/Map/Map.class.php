@@ -57,6 +57,8 @@ class Map
 
         $this->blocTuileManager = new BlocTuileManager($this->entityManager);
 
+        $this->_currentBanque = null;
+
         $this->params = new MapParams();
     }
 
@@ -87,9 +89,17 @@ class Map
         //return false;
     }
 
-    public function genererTuiles($taille, $nbBlocsDepart, $zoomMax = 5)
+    public function genererTuiles()
     {
-        $this->params->reset();
+        if($this->getCurrentBanque() == null)
+        {
+            throw new \Exception("Aucune banque courante n'est sélectionnée.");
+        }
+        $taille = $this->getCurrentBanque()->getConfig()->getTaille();
+        $nbBlocsDepart = $this->getCurrentBanque()->getConfig()->getNbBlocs();
+        $zoomMax = $this->getCurrentBanque()->getConfig()->getZoom();
+
+        $this->getCurrentBanque()->getConfig()->reset();
 
         $this->genererTuilesPourZoom(0, $taille, $nbBlocsDepart);
 
@@ -107,10 +117,10 @@ class Map
             }
         }
 
-        $this->params->setTailleTuiles($taille);
-        $this->params->setPointOrigine($this->getMinPos());
-        $this->params->setCoordMax($this->getMaxPos());
-        $this->params->save();
+        //$this->getCurrentBanque()->getConfig()->setTaille($taille);
+        $this->getCurrentBanque()->getConfig()->setCoordMin($this->getMinPos());
+        $this->getCurrentBanque()->getConfig()->setCoordMax($this->getMaxPos());
+        $this->entityManager->flush();
     }
 
     public function genererTuilesPourZoom($zoom, $taille, $nbBlocs)
@@ -118,6 +128,7 @@ class Map
         $posMini = $this->getMinPos();
         $posMaxi = $this->getMaxPos();
         $tailleBloc = $taille / $nbBlocs;
+        $nomBanque = $this->getCurrentBanque()->getNom();
 
         $this->creerDossier($zoom);
 
@@ -139,7 +150,7 @@ class Map
             $y1 = 0;
         }
 
-        $this->params->addResolutions($nbBlocs / $taille);
+        $this->getCurrentBanque()->getConfig()->addResolution($nbBlocs / $taille);
     }
 
     private function creerDossier($zoom)
@@ -236,6 +247,22 @@ class Map
         }
 
         return false;
+    }
+
+    /**
+     * @return Banque
+     */
+    public function getCurrentBanque()
+    {
+        return $this->_currentBanque;
+    }
+
+    /**
+     * @param Banque $currentBanque
+     */
+    public function setCurrentBanque(Banque $currentBanque)
+    {
+        $this->_currentBanque = $currentBanque;
     }
 
     /**
