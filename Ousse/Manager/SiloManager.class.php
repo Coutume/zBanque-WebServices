@@ -117,8 +117,19 @@ class SiloManager
     {
         if(isset($jsonObject->banque))
         {
-            $silo = new Silo($jsonObject);
             $banque = $this->getOraddBanque($jsonObject->banque);
+
+            $silo = $this->getBypos($jsonObject->x, $jsonObject->z, $banque->getNom());
+
+            if($silo == null)
+            {
+                $silo = new Silo($jsonObject);
+            }
+
+            if(isset($jsonObject->itemPrincipal))
+            {
+                $silo->setItemPrincipal($jsonObject->itemPrincipal);
+            }
 
             $silo->setBanque($banque);
             $this->entityManager->persist($silo);
@@ -136,7 +147,7 @@ class SiloManager
         }
         else
         {
-            throw new \Exception("Impossible de trouver les informations sur la banque dans le silo", -1);
+            throw new \Exception("Impossible de trouver les informations sur la banque dans le silo.", -1);
         }
 
     }
@@ -150,6 +161,16 @@ class SiloManager
     {
         $silo = $this->entityManager->getRepository("\\Ousse\\Entite\\Silo")
             ->findOneBy(array("id" => $id));
+
+        return $silo;
+    }
+
+    public function getBypos($x, $z, $nomBanque)
+    {
+        $silo = $this->entityManager->getRepository("\\Ousse\\Entite\\Silo")
+            ->findOneBy(array(  "x" => $x,
+                                "z" => $z,
+                                "banque" => $nomBanque));
 
         return $silo;
     }
