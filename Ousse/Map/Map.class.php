@@ -12,6 +12,7 @@ namespace Ousse\Map;
 use Doctrine\ORM\EntityManager;
 use Ousse\Entite\Banque;
 use Ousse\Entite\BlocTuile;
+use Ousse\Manager\BanqueManager;
 use Ousse\Manager\BlocTuileManager;
 
 class Map
@@ -32,34 +33,17 @@ class Map
     private $blocTuileManager;
 
     /**
-     * @var MapParams paramètres relatifs à cette carte
-     */
-    private $params;
-
-    /**
      * @var Banque
      */
     private $_currentBanque;
 
     public function __construct(EntityManager $entityManager)
     {
-        /* Ces variables évitent juste les alertes de variables non initialisées
-        $host = '';
-        $user = '';
-        $pwd = '';
-        $dbname = '';
-
-        // Paramètres de connexion
-        include __DIR__."/../../connexion.inc.php";
-        $this->connexion = new \PDO("mysql:host=$host;dbname=$dbname", $user, $pwd);*/
-
         $this->entityManager = $entityManager;
 
         $this->blocTuileManager = new BlocTuileManager($this->entityManager);
 
         $this->_currentBanque = null;
-
-        $this->params = new MapParams();
     }
 
     /**
@@ -69,32 +53,46 @@ class Map
      */
     public function getBlocTuileAt($x, $y)
     {
-        //$reqBloc =$this->connexion->query("SELECT * FROM cases WHERE x = $x AND z = $y");
+        $bloc = $this->blocTuileManager->getByPos($x, $y);
 
-        /*if($reqBloc !== null && $reqBloc !== false)
-        {*/
-            //$bloc = $reqBloc->fetchAll(\PDO::FETCH_CLASS, '\Ousse\Entite\BlocTuile');
-            $bloc = $this->blocTuileManager->getByPos($x, $y);
-
-            if($bloc !== null && count($bloc) > 0)
-            {
-                return $bloc[0];
-            }
-            else
-            {
-                return false;
-            }
-        //}
-
-        //return false;
+        if($bloc !== null && count($bloc) > 0)
+        {
+            return $bloc[0];
+        }
+        else
+        {
+            return false;
+        }
     }
 
+    /**
+     * Génère les tuiles pour toutes les banques ayant une configuration renseignée
+     */
+    public function genererTuilesToutesBanques()
+    {
+        $bm = new BanqueManager($this->entityManager);
+        $banques = $bm->getAllWithConfig();
+
+        foreach ($banques as $banque)
+        {
+            $this->setCurrentBanque($banque);
+            $this->genererTuiles();
+        }
+    }
+
+    /**
+     * Génère les tuiles pour la banque courante
+     * @throws \Exception Si aucune banque courante n'est définie
+     */
     public function genererTuiles()
     {
+        set_time_limit(300); // 5 minutes pour générer la carte d'une banque
+
         if($this->getCurrentBanque() == null)
         {
             throw new \Exception("Aucune banque courante n'est sélectionnée.");
         }
+
         $taille = $this->getCurrentBanque()->getConfig()->getTaille();
         $nbBlocsDepart = $this->getCurrentBanque()->getConfig()->getNbBlocs();
         $zoomMax = $this->getCurrentBanque()->getConfig()->getZoom();
@@ -117,7 +115,6 @@ class Map
             }
         }
 
-        //$this->getCurrentBanque()->getConfig()->setTaille($taille);
         $this->getCurrentBanque()->getConfig()->setCoordMin($this->getMinPos());
         $this->getCurrentBanque()->getConfig()->setCoordMax($this->getMaxPos());
         $this->entityManager->flush();
@@ -130,7 +127,7 @@ class Map
         $tailleBloc = $taille / $nbBlocs;
         $nomBanque = $this->getCurrentBanque()->getNom();
 
-        $this->creerDossier($zoom);
+        $this->creerDossier($zoom, $nomBanque);
 
         $x1 = 0;
         $y1 = 0;
@@ -141,7 +138,7 @@ class Map
                 $im = $this->genererTuile($i, $j, $nbBlocs, $taille, $tailleBloc);
 
                 $nom = "bloc_".  $x1. "_". $y1. ".png";
-                $this->enregistrerImage($im, "Ousse/tuiles/$zoom/$nom");
+                $this->enregistrerImage($im, "Ousse/tuiles/$nomBanque/$zoom/$nom");
 
                 $y1++;
             }
@@ -153,11 +150,11 @@ class Map
         $this->getCurrentBanque()->getConfig()->addResolution($nbBlocs / $taille);
     }
 
-    private function creerDossier($zoom)
+    private function creerDossier($zoom, $nomBanque)
     {
-        if (!file_exists("Ousse/tuiles/$zoom"))
+        if (!file_exists("Ousse/tuiles/$nomBanque/$zoom"))
         {
-            mkdir("Ousse/tuiles/$zoom", 0777, true);
+            mkdir("Ousse/tuiles/$nomBanque/$zoom", 0777, true);
         }
     }
 
@@ -222,7 +219,8 @@ class Map
      */
     public function getMinPos()
     {
-        $pos = $this->entityManager->getConnection()->query("SELECT MIN(x) as x, MIN(z) as y FROM cases");
+        $pos = $this->entityManager->getConnection()->query("SELECT MIN(x) as x, MIN(z) as y FROM cases
+                                                              where banque = '{$this->_currentBanque->getNom()}'");
 
         if($pos !== null && $pos !== false && $pos->rowCount() > 0)
         {
@@ -238,7 +236,8 @@ class Map
      */
     public function getMaxPos()
     {
-        $pos = $this->entityManager->getConnection()->query("SELECT MAX(x) as x, MAX(z) as y FROM cases");
+        $pos = $this->entityManager->getConnection()->query("SELECT MAX(x) as x, MAX(z) as y FROM cases
+                                                              where banque = '{$this->_currentBanque->getNom()}'");
 
         if($pos !== null && $pos !== false && $pos->rowCount() > 0)
         {
@@ -263,13 +262,5 @@ class Map
     public function setCurrentBanque(Banque $currentBanque)
     {
         $this->_currentBanque = $currentBanque;
-    }
-
-    /**
-     * @return MapParams
-     */
-    public function getParams()
-    {
-        return $this->params;
     }
 }

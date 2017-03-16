@@ -27,7 +27,7 @@ class EntitesGetService extends SiloService
             $where = explode('/', $args['whereParams']);
             $equals = explode('/', $args['equalsParams']);
 
-            $entites = $this->getSiloManager()->get($args['entite'], $this->construireConditions($where, $equals));
+            $entites = $this->getSiloManager()->getEntities($args['entite'], $this->construireConditions($where, $equals));
 
             $reponse['entite'] = $entites;
             $reponse['message'] = "Entité(s) récupérée(s).";

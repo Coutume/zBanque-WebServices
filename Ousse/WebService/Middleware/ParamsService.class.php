@@ -11,6 +11,7 @@ namespace Ousse\WebService\Middleware;
 
 use Doctrine\ORM\EntityManager;
 use Ousse\Manager\BanqueManager;
+use Ousse\WebService\Reponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -31,9 +32,16 @@ class ParamsService extends Service
     {
         $bm = new BanqueManager($this->entityManager);
         $banque = $bm->getByName($args['banque']);
-        $response->getBody()->write(json_encode($banque->getConfig()));
-        $response = $response->withHeader('Content-type', 'application/json');
+        $reponse = array();
 
-        return $response;
+        if($banque != null && $banque->getConfig() !== null)
+        {
+            $reponse["entite"] = $banque->getConfig();
+            $reponse['message'] = "Entités récupérées.";
+            $reponse['code'] = 42;
+            return Reponse::getSuccess($response, $reponse);
+        }
+
+        return Reponse::getError($response, new \Exception("Aucune configuration n'a été trouvée pour la banque {$args["banque"]}.", -1));
     }
 }

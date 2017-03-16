@@ -10,7 +10,9 @@ namespace Ousse\Manager;
 
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\QueryBuilder;
 use Ousse\Entite\Banque;
+use Ousse\Entite\MapBanqueConfig;
 
 class BanqueManager
 {
@@ -35,6 +37,23 @@ class BanqueManager
             ->findAll();
 
         return $banques;
+    }
+
+    /**
+     * Retourne toutes les banques ayant une configuration
+     * @return Banque[]
+     */
+    public function getAllWithConfig()
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $qb->select('b')
+            ->from('\\Ousse\\Entite\\Banque', 'b')
+            ->where('b.config is not NULL');
+
+        $q = $qb->getQuery();
+        $resultat = $q->getResult();
+        return $resultat;
     }
 
     /**
@@ -75,11 +94,24 @@ class BanqueManager
         $banque = $this->getByName($nom);
         if($banque === null)
         {
-            $banque = new Banque($jsonObject);
-            $this->entityManager->persist($banque);
-            $this->entityManager->flush();
+            $this->add($jsonObject);
         }
 
         return $banque;
+    }
+
+    public function add($jsonObject)
+    {
+        $banque = new Banque($jsonObject);
+        $this->entityManager->persist($banque);
+        $this->entityManager->flush();
+    }
+
+    public function setConfig(Banque $banque, MapBanqueConfig $config)
+    {
+        $banque->setConfig($config);
+
+        $this->entityManager->persist($config);
+        $this->entityManager->flush();
     }
 }

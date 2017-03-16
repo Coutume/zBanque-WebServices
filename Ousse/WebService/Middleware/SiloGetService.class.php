@@ -19,7 +19,7 @@ class SiloGetService extends SiloService
                              ResponseInterface      $response, $args)
     {
         $reponse = array();
-        $silo = $this->getSiloManager()->getSilo($args['id']);
+        $silo = $this->getSiloManager()->get($args['id']);
 
         if($silo !== null)
         {

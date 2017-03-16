@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: moribus
- * Date: 01/02/2016
- * Time: 23:49
+ * Date: 12/10/2016
+ * Time: 23:03
  */
 
 namespace Ousse\WebService\Middleware;
@@ -14,26 +14,29 @@ use Ousse\WebService\Reponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class SiloPostService extends SiloService
+class BanqueSetConfig extends BanqueService
 {
     public function __invoke(ServerRequestInterface $request,
-                             ResponseInterface      $response, $args)
+                             ResponseInterface $response, $args)
     {
+        $banque = $this->getBanqueManager()->getByName($args["nom"]);
         $reponse = array();
-        try
+
+        if($banque !== null)
         {
             $contenu = $request->getBody()->getContents();
 
             $jsonObject = SiloManager::jsonDecode($contenu);
-            $this->getSiloManager()->addMany($jsonObject);
 
-            $reponse['message'] = "Entité ajoutée.";
-            $reponse['code'] = 42; // Je sais, c'est pas très pro. :D
+            $this->getBanqueManager()->setConfig($banque, $jsonObject);
+
+            $reponse["message"] = "Entité ajoutée";
+            $reponse['code'] = 42;
+
             return Reponse::postSuccess($response, $reponse);
         }
-        catch(\Exception $ex)
-        {
-            return Reponse::postError($response, $ex);
-        }
+
+        return Reponse::postError($response, new \Exception("La banque est introuvable.", -1));
     }
+
 }

@@ -99,9 +99,37 @@ class MapBanqueConfig extends Entite
     protected $resolutions;
 
 
-    public function __construct()
+    public function __construct($jsonObject)
     {
         $this->resolutions = array();
+
+        if(isset($jsonObject->taille))
+        {
+            $this->taille = $jsonObject->taille;
+
+            if(isset($jsonObject->zoom))
+            {
+                $this->zoom = $jsonObject->zoom;
+
+                if(isset($jsonObject->nbBlocs))
+                {
+                    $this->nbBlocs = $jsonObject->nbBlocs;
+                }
+                else
+                {
+                    throw new \Exception("La propriété nbBlocs nécessaire à l'entité Config est introuvable dans l'objet Json.");
+                }
+            }
+            else
+            {
+                throw new \Exception("La propriété zoom nécessaire à l'entité Config est introuvable dans l'objet Json.");
+            }
+
+        }
+        else
+        {
+            throw new \Exception("La propriété taille nécessaire à l'entité Config est introuvable dans l'objet Json.");
+        }
     }
 
     /**

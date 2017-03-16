@@ -9,9 +9,7 @@
 namespace Ousse\Manager;
 use Doctrine\ORM\EntityManager;
 use Ousse\Entite\Banque;
-use Ousse\Entite\Coffre;
 use Ousse\Entite\Item;
-use Ousse\Entite\ItemStack;
 use Ousse\Entite\Silo;
 use stdClass;
 
@@ -35,13 +33,25 @@ class SiloManager
      */
     private $_banqueManager;
 
+    /**
+     * @var ItemStackManager
+     */
+    private $_itemStackManager;
+
+    /**
+     * @var CoffreManager
+     */
+    private $_coffreManager;
+
     public function __construct(EntityManager $manager)
     {
         $this->entityManager = $manager;
         $this->_banqueManager = new BanqueManager($this->entityManager);
+        $this->_itemStackManager = new ItemStackManager($this);
+        $this->_coffreManager = new CoffreManager($this);
     }
 
-    public function get($entite, array $conditions)
+    public function getEntities($entite, array $conditions)
     {
         $entites = $this->entityManager->getRepository("\\Ousse\\Entite\\$entite")->findBy($conditions);
 
@@ -74,23 +84,21 @@ class SiloManager
         return $this->_banqueManager->getOradd($jsonObject);
     }
 
-
-
     /**
      * Ajoute le ou les silos définis dans l'objet json
      * @param stdClass $jsonObject
      */
-    public function addSilos($jsonObject)
+    public function addMany($jsonObject)
     {
         if(!is_array($jsonObject))
         {
-            $this->addSilo($jsonObject);
+            $this->add($jsonObject);
         }
         else
         {
             foreach($jsonObject as $json)
             {
-                $this->addSilo($json);
+                $this->add($json);
             }
         }
 
@@ -105,7 +113,7 @@ class SiloManager
      * @param stdClass $jsonObject
      * @throws \Exception
      */
-    protected function addSilo(stdClass $jsonObject)
+    protected function add(stdClass $jsonObject)
     {
         if(isset($jsonObject->banque))
         {
@@ -117,7 +125,7 @@ class SiloManager
 
             if(isset($jsonObject->coffres) && is_array($jsonObject->coffres))
             {
-                $this->addCoffresTo($silo, $jsonObject->coffres);
+                $this->_coffreManager->addManyTo($silo, $jsonObject->coffres);
             }
 
             if(isset($jsonObject->itemPrincipal))
@@ -138,175 +146,12 @@ class SiloManager
      * @param $id
      * @return null|Silo
      */
-    public function getSilo($id)
+    public function get($id)
     {
         $silo = $this->entityManager->getRepository("\\Ousse\\Entite\\Silo")
             ->findOneBy(array("id" => $id));
 
         return $silo;
-    }
-
-    /**
-     * Ajoute le ou les coffres définis dans l'objet JSON
-     * @param int $idSilo l'id du silo dans lequel ajouter les coffres
-     * @param stdClass $jsonObject
-     */
-    public function addCoffres($idSilo, $jsonObject)
-    {
-        $silo = $this->getSilo($idSilo);
-        if($silo === null)
-        {
-            throw new \InvalidArgumentException("Le silo demandé n'existe pas.");
-        }
-
-        if(is_array($jsonObject))
-        {
-            $this->addCoffresTo($silo, $jsonObject);
-        }
-        else
-        {
-            $this->addCoffreTo($silo, $jsonObject);
-        }
-
-        $this->entityManager->flush();
-    }
-
-    /**
-     * Ajoute les coffres contenus dans l'objet JSON dans le silo $silo
-     * @param Silo $silo le silo dans lequel ajouter les coffres
-     * @param array $jsonObject une liste des objets à ajouter
-     * @throws \Exception Si un des éléments de la liste n'est pas un objet valide
-     */
-    protected function addCoffresTo(Silo $silo, array $jsonObject)
-    {
-        foreach($jsonObject as $jsonCoffre)
-        {
-            if($jsonCoffre instanceof stdClass)
-            {
-                $this->addCoffreTo($silo, $jsonCoffre);
-            }
-            else
-            {
-                throw new \Exception("l'attribut coffres ne contient pas une liste valide.");
-            }
-        }
-    }
-
-    /**
-     * Ajoute un coffre dans le silo $silo
-     * @see addCoffresTo
-     * @param Silo $silo
-     * @param stdClass $jsonObject
-     * @throws \Exception
-     */
-    protected function addCoffreTo(Silo $silo, stdClass $jsonObject)
-    {
-        $coffre = $this->getCoffre($jsonObject->x, $jsonObject->y, $jsonObject->z);
-
-        if($coffre === null)
-        {
-            $coffre = new Coffre($jsonObject);
-            $this->entityManager->persist($coffre);
-        }
-
-        $coffre->setSilo($silo);
-
-        if(isset($jsonObject->itemStacks) && is_array($jsonObject->itemStacks))
-        {
-            $this->addItemStacksTo($coffre, $jsonObject->itemStacks);
-        }
-    }
-
-    /**
-     * Récupère un coffre se trouvant aux coordonnées passées en paramètre
-     * @param $x
-     * @param $y
-     * @param $z
-     * @return null|Coffre
-     */
-    public function getCoffre($x, $y, $z)
-    {
-        $coffre = $this->entityManager  ->getRepository("\\Ousse\\Entite\\Coffre")
-            ->findOneBy(array(  "x" => $x,
-                "y" => $y,
-                "z" => $z,));
-
-        return $coffre;
-    }
-
-    public function getCoffres($idSilo)
-    {
-        $coffres = $this->entityManager  ->getRepository("\\Ousse\\Entite\\Coffre")
-            ->findBy(array("silo" => $idSilo));
-
-        return $coffres;
-    }
-
-    public function addItemStacks($x, $y, $z, $jsonObject)
-    {
-        $coffre = $this->getCoffre($x, $y, $z);
-        if($coffre === null)
-        {
-            throw new \InvalidArgumentException("Impossible de trouver un coffre à la position $x, $y, $z");
-        }
-
-        if(is_array($jsonObject))
-        {
-            $this->addItemStacksTo($coffre, $jsonObject);
-        }
-        else
-        {
-            $this->addItemStackTo($coffre, $jsonObject);
-        }
-
-        $this->entityManager->flush();
-    }
-
-    public function getItemStacks($x, $y, $z)
-    {
-        $itemStacks = null;
-        $coffre = $this->getCoffre($x, $y, $z);
-        if($coffre !== null)
-        {
-            $itemStacks = $this->entityManager->getRepository("\\Ousse\\Entite\\ItemStack")
-                ->findBy(array("coffre" => $coffre->getId()));
-        }
-
-        return $itemStacks;
-    }
-
-    protected function addItemStacksTo(Coffre $coffre, array $jsonObject)
-    {
-        foreach($jsonObject as $jsonItemStack)
-        {
-            if($jsonItemStack instanceof stdClass)
-            {
-                $this->addItemStackTo($coffre, $jsonItemStack);
-            }
-            else
-            {
-                throw new \Exception("l'attribut itemStacks contient une liste avec des données invalides.");
-            }
-        }
-    }
-
-    protected function addItemStackTo(Coffre $coffre, stdClass $jsonObject)
-    {
-        $item = null;
-        if(isset($jsonObject->item))
-        {
-            $item = $this->getOraddItem($jsonObject->item);
-        }
-        else
-        {
-            throw new \Exception("La propriété item est manquante pour l'entité ItemStack");
-        }
-
-        $itemStack = new ItemStack($jsonObject);
-        $itemStack->setCoffre($coffre);
-        $itemStack->setItem($item);
-
-        $this->entityManager->persist($itemStack);
     }
 
     /**
@@ -327,7 +172,7 @@ class SiloManager
         $this->entityManager->flush();
     }
 
-    protected function getOraddItems(array $jsonObject)
+    public function getOraddItems(array $jsonObject)
     {
         foreach($jsonObject as $jsonItem)
         {
@@ -346,7 +191,7 @@ class SiloManager
      * @param $jsonObject
      * @return Item
      */
-    protected function getOraddItem($jsonObject)
+    public function getOraddItem($jsonObject)
     {
         $data = (isset($jsonObject->data)) ? $jsonObject->data: 0;
         $idItem = (isset($jsonObject->idItem)) ? $jsonObject->idItem: -1;
@@ -375,6 +220,70 @@ class SiloManager
                               "data"   => $data));
 
         return $item;
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
+    /**
+     * @param EntityManager $entityManager
+     */
+    public function setEntityManager($entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @return BanqueManager
+     */
+    public function getBanqueManager()
+    {
+        return $this->_banqueManager;
+    }
+
+    /**
+     * @param BanqueManager $banqueManager
+     */
+    public function setBanqueManager($banqueManager)
+    {
+        $this->_banqueManager = $banqueManager;
+    }
+
+    /**
+     * @return ItemStackManager
+     */
+    public function getItemStackManager()
+    {
+        return $this->_itemStackManager;
+    }
+
+    /**
+     * @param ItemStackManager $itemStackManager
+     */
+    public function setItemStackManager($itemStackManager)
+    {
+        $this->_itemStackManager = $itemStackManager;
+    }
+
+    /**
+     * @return CoffreManager
+     */
+    public function getCoffreManager()
+    {
+        return $this->_coffreManager;
+    }
+
+    /**
+     * @param CoffreManager $coffreManager
+     */
+    public function setCoffreManager($coffreManager)
+    {
+        $this->_coffreManager = $coffreManager;
     }
 
     /**

@@ -19,7 +19,7 @@ class CoffreGetService extends SiloService
                              ResponseInterface $response, $args)
     {
         $reponse = array();
-        $coffre = $this->getSiloManager()->getCoffre($args['x'], $args['y'], $args['z']);
+        $coffre = $this->getSiloManager()->getCoffre($args['x'], $args['y'], $args['z'],$args['map']);
 
         if($coffre !== null)
         {

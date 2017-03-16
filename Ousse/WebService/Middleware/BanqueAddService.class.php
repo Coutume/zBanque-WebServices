@@ -2,26 +2,29 @@
 /**
  * Created by PhpStorm.
  * User: moribus
- * Date: 11/06/2016
- * Time: 21:16
+ * Date: 12/10/2016
+ * Time: 21:28
  */
 
 namespace Ousse\WebService\Middleware;
 
+use Ousse\Manager\SiloManager;
 use Ousse\WebService\Reponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class BanqueResetService extends BanqueService
+class BanqueAddService extends BanqueService
 {
     public function __invoke(ServerRequestInterface $request,
                              ResponseInterface $response, $args)
     {
-        $this->getBanqueManager()->resetByName($args['nom']);
+        $contenu = $request->getBody()->getContents();
 
-        $reponse['entite'] = null;
-        $reponse['message'] = "Les silos liés à la banque {$args['nom']} ont été supprimés.";
+        $jsonObject = SiloManager::jsonDecode($contenu);
+        $this->getBanqueManager()->add($jsonObject);
+
+        $reponse['message'] = "Entité ajoutée.";
         $reponse['code'] = 42;
-        return Reponse::getSuccess($response, $reponse);
+        return Reponse::postSuccess($response, $reponse);
     }
 }

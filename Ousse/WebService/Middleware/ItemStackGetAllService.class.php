@@ -9,6 +9,7 @@
 namespace Ousse\WebService\Middleware;
 
 
+use Ousse\Manager\ItemStackManager;
 use Ousse\WebService\Reponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,7 +20,8 @@ class ItemStackGetAllService extends SiloService
                              ResponseInterface $response, $args)
     {
         $reponse = array();
-        $itemStacks = $this->getSiloManager()->getItemStacks($args['x'],$args['y'],$args['z']);
+        $itemStackManager = new ItemStackManager($this->getManager());
+        $itemStacks = $itemStackManager->getItemStacks($args['x'],$args['y'],$args['z'], $args['map']);
 
         if($itemStacks !== null)
         {
