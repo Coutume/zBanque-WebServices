@@ -20,7 +20,7 @@ class AuthService extends EntiteService
                              ResponseInterface $response, $args)
     {
         // Contrôle de connexion pour toute requête modifiant les données
-        if( $request->getMethod() == "POST" ||
+        if( $request->getMethod() == "" ||
             $request->getMethod() == "PUT" ||
             $request->getMethod() == "DELETE")
         {

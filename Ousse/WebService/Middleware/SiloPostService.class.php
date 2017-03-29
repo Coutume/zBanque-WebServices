@@ -25,9 +25,29 @@ class SiloPostService extends SiloService
             $contenu = $request->getBody()->getContents();
 
             $jsonObject = SiloManager::jsonDecode($contenu);
-            $this->getSiloManager()->addMany($jsonObject);
 
-            $reponse['message'] = "Entité ajoutée.";
+            // Suppression des silos renseignés dans le JSON
+            if(isset($jsonObject->reset))
+            {
+                if(is_array($jsonObject->reset))
+                {
+                    $nbSilosSuppr = $this->getSiloManager()->deleteMany($jsonObject->reset);
+                    $reponse['reset'] = $nbSilosSuppr . " silos supprimés.";
+                }
+                else
+                {
+                    throw new \Exception("La propriété reset doit être un tableau contenant lesinfos sur les silos à remettre à zéro.");
+                }
+            }
+
+            // Ajout ou mise à jour des silos
+            if(isset($jsonObject->silos))
+            {
+                $this->getSiloManager()->addMany($jsonObject->silos);
+                $reponse['silos'] = "Silos ajoutées ou mis à jour";
+            }
+
+            $reponse['message'] = "Opération terminée.";
             $reponse['code'] = 42; // Je sais, c'est pas très pro. :D
             return Reponse::postSuccess($response, $reponse);
         }

@@ -9,6 +9,7 @@
 namespace Ousse\WebService\Middleware;
 
 
+use Ousse\Manager\CoffreManager;
 use Ousse\WebService\Reponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,7 +20,8 @@ class CoffreGetService extends SiloService
                              ResponseInterface $response, $args)
     {
         $reponse = array();
-        $coffre = $this->getSiloManager()->getCoffre($args['x'], $args['y'], $args['z'],$args['map']);
+        $cm = new CoffreManager($this->getSiloManager());
+        $coffre = $cm->get($args['x'], $args['y'], $args['z'],$args['map']);
 
         if($coffre !== null)
         {

@@ -106,8 +106,20 @@ class CoffreManager
 
         if(isset($jsonObject->itemStacks) && is_array($jsonObject->itemStacks))
         {
+            $this->reset($coffre); // Remise à zéro du contenu
             $this->_itemStackManager->addManyTo($coffre, $jsonObject->itemStacks);
         }
+    }
+
+    /**
+     * Supprime tous les itemStacks présents dans un coffre
+     * @param $coffre Coffre Le coffre à remettre à zéro
+     */
+    public function reset($coffre)
+    {
+        $reqResetBanque = $this->entityManager->createQuery("Delete \\Ousse\\Entite\\ItemStack its Where its.coffre IN".
+            " (Select coffre From \\Ousse\\Entite\\Coffre coffre Where coffre.id = '{$coffre->getId()}')");
+        $reqResetBanque->execute();
     }
 
     /**

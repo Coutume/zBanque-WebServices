@@ -94,7 +94,7 @@ class BanqueManager
         $banque = $this->getByName($nom);
         if($banque === null)
         {
-            $this->add($jsonObject);
+            $banque = $this->add($jsonObject);
         }
 
         return $banque;
@@ -105,6 +105,8 @@ class BanqueManager
         $banque = new Banque($jsonObject);
         $this->entityManager->persist($banque);
         $this->entityManager->flush();
+
+        return $banque;
     }
 
     public function setConfig(Banque $banque, MapBanqueConfig $config)

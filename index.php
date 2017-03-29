@@ -49,5 +49,6 @@ $app->get('/banque',                new Service\BanqueGetService($entityManager)
 $app->get('/banque/{nom}',          new Service\BanqueGetService($entityManager)); // Récupération d'une banque par son nom
 $app->post('/banque/{nom}/config',  new Service\BanqueSetConfig($entityManager));
 $app->get('/banque/{banque}/config',new Service\ParamsService($entityManager)); // alias pour /parametres/{banque}
+$app->delete('/banque/{banque}/silo/{x}/{z}', new Service\SiloDeleteService($entityManager));
 
 $app->run();

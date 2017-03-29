@@ -165,6 +165,12 @@ class SiloManager
         return $silo;
     }
 
+    /**
+     * @param $x
+     * @param $z
+     * @param $nomBanque
+     * @return null|Silo
+     */
     public function getBypos($x, $z, $nomBanque)
     {
         $silo = $this->entityManager->getRepository("\\Ousse\\Entite\\Silo")
@@ -173,6 +179,33 @@ class SiloManager
                                 "banque" => $nomBanque));
 
         return $silo;
+    }
+
+    public function delete($silo)
+    {
+        $this->entityManager->remove($silo);
+
+        $this->entityManager->flush();
+    }
+
+    public function deleteMany($jsonSilos)
+    {
+        $supprimee = 0;
+        foreach ($jsonSilos as $jsonSilo)
+        {
+            if(isset($jsonSilo->nomBanque) && isset($jsonSilo->x) && isset($jsonSilo->x))
+            {
+                $silo = $this->getBypos($jsonSilo->x, $jsonSilo->z, $jsonSilo->nomBanque);
+
+                if($silo != null)
+                {
+                    $this->delete($silo);
+                    $supprimee++;
+                }
+            }
+        }
+
+        return $supprimee;
     }
 
     /**
